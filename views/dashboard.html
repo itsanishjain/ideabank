@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+  </head>
+
+  <style>
+    img {
+      width: 300px;
+      height: 300px;
+    }
+
+    .card {
+      display: flex;
+      /* padding: 30px; */
+      justify-content: space-between;
+      align-items: center;
+      overflow-x: auto;
+    }
+  </style>
+
+  <body>
+    <div>
+      <!-- <div class="container"> -->
+      <h1>TOP WINNERS</h1>
+      <div class="card">
+        <% for( let index=0; index < winners.length; index++ ) { %>
+
+        <!-- HTML HERE -->
+
+        <div>
+          <p><%=winners[index].name %></p>
+          <p>likes: <%=winners[index].like %></p>
+          <img src="<%" ="winners[index].image" % /> />
+        </div>
+
+        <% } %>
+      </div>
+
+      <h1>TOP LOOSERS</h1>
+      <div class="card">
+        <% for( let index=0; index < loosers.length; index++ ) { %>
+
+        <!-- HTML HERE -->
+
+        <div class="">
+          <p><%=loosers[index].name %></p>
+          <p>dislikes: <%=loosers[index].dislike %></p>
+          <img src="<%" ="loosers[index].image" % /> />
+        </div>
+
+        <% } %>
+      </div>
+    </div>
+
+    <script src="charts.js"></script>
+  </body>
+</html>
