@@ -101,7 +101,6 @@ body {
 }
 
 .card .like::after {
-  content: "YUMM";
   color: #4dca93;
   border: 0.1em solid #4dca93;
 }

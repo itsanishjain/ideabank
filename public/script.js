@@ -47,8 +47,32 @@ const shuffle = (array) => {
     return array;
 }
 
+const showRanking = (key = "Steelonium") => {
+    // Show ratings of the card if it is in the local storage
+
+    if (localStorage.getItem(key)) {
+        const data = JSON.parse(localStorage.getItem("Steelonium"));
+        const rating = document.createElement("div");
+        rating.id = key;
+        rating.innerHTML = `
+        <div class="flex justify-between">
+        <div class="like">
+            <span>👍️</span>
+            <span>${data.like}</span>
+        </div>
+        <div class="dislike">
+            <span>👎️</span>
+            <span>${data.dislike}</span>
+        </div>
+        </div>
+        `;
+        return rating;
+    }
+}
+
 const createCard = (row) => {
     const key = row[2].replace(/\s+/g, '_');
+
     // fetch ranking for the card
     fetch(siteUrl + "/rankings", {
         method: "POST",
@@ -58,14 +82,15 @@ const createCard = (row) => {
         // console.log(data)
         if (data.message != "fail") {
             addToLocalStorage(key, JSON.stringify(data.data));
-
         }
     })
     const card = document.createElement("div");
+    const rating = showRanking(key);
     card.className = "card";
     card.innerHTML = `
     <div class="card-content">
-        <div class="card-body space-y-1">
+        ${rating ? rating.outerHTML : ""}
+        <div class="mt-1 card-body space-y-1">
             <div id="name" name=${key}>${row[2]}</div>
             <div>First Sight Night 👀️ ${row[1]}</div>
             <div>${row[5]} | ${row[4]}</div>
@@ -172,6 +197,7 @@ const addHammer = (el) => {
         // Removes the stamps and retrieve the 300ms transition
         el.classList.remove("nope", "like", "super_like", "moving");
         if (absDelX > 80) {
+
             frame.removeChild(el);
             cardUsed += 1;
             const remainingCards = frame.getElementsByClassName("card");

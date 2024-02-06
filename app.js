@@ -24,9 +24,6 @@ app.get("/", (req, res) => {
 });
 
 app.post("/rankings", async (req, res) => {
-
-
-  console.log(req.body)
   const { collection } = req.body
   const docRef = doc(db, "rankings", collection);
   const docSnap = await getDoc(docRef);
