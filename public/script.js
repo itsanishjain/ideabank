@@ -3,9 +3,12 @@ const frame = document.body.querySelector(".frame");
 let cardUsed = 5;
 let rows;
 
+const addToLocalStorage = (key, value) => {
+    localStorage.setItem(key, value);
+}
+
 const db = async (status, item) => {
     const name = item.querySelector("#name").getAttribute("name");
-    console.log(name)
 
     const like = {
         method: "POST",
@@ -52,7 +55,11 @@ const createCard = (row) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ collection: key }),
     }).then((response) => response.json()).then((data) => {
-        console.log(data)
+        // console.log(data)
+        if (data.message != "fail") {
+            addToLocalStorage(key, JSON.stringify(data.data));
+
+        }
     })
     const card = document.createElement("div");
     card.className = "card";
@@ -81,7 +88,6 @@ const createCard = (row) => {
 }
 
 const moreCards = () => {
-    console.log("More Cards", cardUsed)
     if (!frame) return;
     for (let i = cardUsed; i < cardUsed + 5; i++) {
         const values = rows[i].split("\t");
@@ -110,7 +116,7 @@ const fetchCards = () => {
         "Link to Doc With Technical Details",
         "Requires Changes to Laws of Physics",
     ];
-    console.log(headers)
+    // console.log(headers)
     // read from the local tsv file
     fetch("/ideabank.tsv")
         .then((response) => response.text())
@@ -120,7 +126,7 @@ const fetchCards = () => {
             rows = shuffle(rows);
             for (let i = 0; i < 5; i++) {
                 const values = rows[i].split("\t");
-                console.log(values)
+                // console.log(values)
                 const card = createCard(values);
                 frame.appendChild(card);
                 addHammer(card);
