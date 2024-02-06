@@ -32,7 +32,7 @@ const db = async (status) => {
 
 }
 
-function shuffle(array) {
+const shuffle = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
@@ -44,10 +44,24 @@ const createCard = (row) => {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
+    <div class="card-content">
+        <div class="card-body space-y-1">
+            <div>${row[2]}</div>
+            <div>First Sight Night 👀️ ${row[1]}</div>
+            <div>${row[5]} | ${row[4]}</div>
+        </div>
+        
         <div class="bottom">
             <div class="title">
                 <span>${row[3]}</span>  
             </div>
+        </div>
+        <div>
+        <div class="mt-2 text-lg">
+            Built 🏗️: ${row[6]} ${row[7] != "N/A" ? `by ${row[7]}` :
+            ""}</div>
+        </div>
+        <div>${row[11]}</div>
         </div>
     `;
     return card;
@@ -82,6 +96,7 @@ const fetchCards = () => {
         "Link to Doc With Technical Details",
         "Requires Changes to Laws of Physics",
     ];
+    console.log(headers)
     // read from the local tsv file
     fetch("/ideabank.tsv")
         .then((response) => response.text())
@@ -91,6 +106,7 @@ const fetchCards = () => {
             rows = shuffle(rows);
             for (let i = 0; i < 5; i++) {
                 const values = rows[i].split("\t");
+                console.log(values)
                 const card = createCard(values);
                 frame.appendChild(card);
                 addHammer(card);
