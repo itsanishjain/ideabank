@@ -1,15 +1,19 @@
 const siteUrl = window.location.origin;
 const frame = document.body.querySelector(".frame");
+let cardUsed = 5;
 let rows;
 
-const db = async (status) => {
+const db = async (status, item) => {
+    const name = item.querySelector("#name").getAttribute("name");
+    console.log(name)
+
     const like = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            name: "current.innerText",
+            name: name,
             status: "like",
-            image: "img",
+
         }),
     };
 
@@ -17,7 +21,7 @@ const db = async (status) => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            name: "current.innerText",
+            name: name,
             status: "dislike",
             image: "img",
         }),
@@ -41,12 +45,21 @@ const shuffle = (array) => {
 }
 
 const createCard = (row) => {
+    const key = row[2].replace(/\s+/g, '_');
+    // fetch ranking for the card
+    fetch(siteUrl + "/rankings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ collection: key }),
+    }).then((response) => response.json()).then((data) => {
+        console.log(data)
+    })
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
     <div class="card-content">
         <div class="card-body space-y-1">
-            <div>${row[2]}</div>
+            <div id="name" name=${key}>${row[2]}</div>
             <div>First Sight Night 👀️ ${row[1]}</div>
             <div>${row[5]} | ${row[4]}</div>
         </div>
@@ -68,8 +81,9 @@ const createCard = (row) => {
 }
 
 const moreCards = () => {
+    console.log("More Cards", cardUsed)
     if (!frame) return;
-    for (let i = 0; i < 5; i++) {
+    for (let i = cardUsed; i < cardUsed + 5; i++) {
         const values = rows[i].split("\t");
         const card = createCard(values);
         frame.appendChild(card);
@@ -144,15 +158,16 @@ const addHammer = (el) => {
         // if x is negative, then it is a left swipe
         if (x < 0) {
             console.log("Left Swipe")
-            db("dislike");
+            db("dislike", el);
         } else {
             console.log("Right Swipe")
-            db("like");
+            db("like", el);
         }
         // Removes the stamps and retrieve the 300ms transition
         el.classList.remove("nope", "like", "super_like", "moving");
         if (absDelX > 80) {
             frame.removeChild(el);
+            cardUsed += 1;
             const remainingCards = frame.getElementsByClassName("card");
             if (remainingCards.length < 2) {
                 moreCards();

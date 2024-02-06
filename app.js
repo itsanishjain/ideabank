@@ -5,10 +5,8 @@ require('dotenv').config();
 const {
   doc,
   setDoc,
-  collection,
   increment,
-  getDocs,
-  query,
+  getDoc
 } = require("firebase/firestore");
 
 const { db } = require("./firebaseConfig.js");
@@ -25,60 +23,26 @@ app.get("/", (req, res) => {
   res.render("index.html");
 });
 
-const compareLike = (a, b) => {
-  // let valA = Object.values(a)[0];
-  // let valB = Object.values(b)[0];
+app.post("/rankings", async (req, res) => {
 
-  var likeA = a.like;
-  var likeB = b.like;
 
-  if (likeA > likeB) return -1;
-  if (likeA < likeB) return 1;
+  console.log(req.body)
+  const { collection } = req.body
+  const docRef = doc(db, "rankings", collection);
+  const docSnap = await getDoc(docRef);
 
-  return 0;
-};
-
-const compareDilike = (a, b) => {
-  // let valA = Object.values(a)[0];
-  // let valB = Object.values(b)[0];
-
-  var dislikeA = a.dislike;
-  var dislikeB = b.dislike;
-
-  if (dislikeA > dislikeB) return -1;
-  if (dislikeA < dislikeB) return 1;
-
-  return 0;
-};
-
-app.get("/charts", async (req, res) => {
-  const q = query(collection(db, "rankings"));
-
-  const querySnapshot = await getDocs(q);
-
-  let rankingsData = [];
-
-  querySnapshot.forEach((doc) => {
-    let id = doc.id;
-    let d = doc.data();
-    rankingsData.push({ name: id, ...d });
-  });
-
-  console.log(rankingsData);
-
-  let winners = rankingsData.sort(compareLike).slice(0, 3);
-
-  let loosers = rankingsData.sort(compareDilike).slice(0, 3);
-
-  // console.log(winners);
-  // console.log(loosers);
-
-  res.render("charts.html", { winners, loosers });
-  // res.send("DONE");
+  if (docSnap.exists()) {
+    // console.log("Document data:", docSnap.data());
+    return res.json({ message: "success", data: docSnap.data() });
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+    return res.status(404).json({ message: "fail" });
+  }
 });
 
 app.post("/fire", async (req, res) => {
-  const { name, status, image } = req.body;
+  const { name, status } = req.body;
 
   if (status != "like" && status != "dislike")
     return res.status(400).json({ message: "fail" });
@@ -89,7 +53,7 @@ app.post("/fire", async (req, res) => {
       {
         like: increment(1),
         dislike: increment(0),
-        image,
+
       },
       { merge: true }
     );
@@ -99,7 +63,7 @@ app.post("/fire", async (req, res) => {
       {
         dislike: increment(1),
         like: increment(0),
-        image,
+
       },
       { merge: true }
     );
